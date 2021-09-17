@@ -22,7 +22,7 @@ F-->G(InfluxDB)
 
 ## Hardware:
 
-![](D:\Development\PondPVTemp\doc\FritzingDiagrampng.png)
+![](./doc/FritzingDiagrampng.png)
 
 ## Software (ESP32):
 
