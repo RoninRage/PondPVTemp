@@ -15,7 +15,7 @@ A[Temp Sensor] -->B(ESP32)
 C[Battery Voltage] -->B
 B-->D[WIFI]
 D-->E>MQTT]
-E-->F{{NodeRed}}
+E-->F[NodeRed]
 F-->G[(InfluxDB)]
 
 ```
