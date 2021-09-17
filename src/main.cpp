@@ -29,7 +29,7 @@ String batLevel;
 
 //deep sleep related:
 #define uS_TO_S_FACTOR 1000000  /* Conversion factor for micro seconds to seconds */
-#define TIME_TO_SLEEP  60        /* Time ESP32 will go to sleep (in seconds) */
+#define TIME_TO_SLEEP  600        /* Time ESP32 will go to sleep (in seconds) */
 
 void print_wakeup_reason(){
   esp_sleep_wakeup_cause_t wakeup_reason;
@@ -48,26 +48,26 @@ void print_wakeup_reason(){
 }
 
 void connectToWifi() {
-  Serial.println("Connecting to Wi-Fi...");
+//  Serial.println("Connecting to Wi-Fi...");
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 }
 
 void connectToMqtt() {
-  Serial.println("Connecting to MQTT...");
+//  Serial.println("Connecting to MQTT...");
   mqttClient.connect();
 }
 
 void WiFiEvent(WiFiEvent_t event) {
-  Serial.printf("[WiFi-event] event: %d\n", event);
+//  Serial.printf("[WiFi-event] event: %d\n", event);
   switch(event) {
     case SYSTEM_EVENT_STA_GOT_IP:
-      Serial.println("WiFi connected");
+     /* Serial.println("WiFi connected");
       Serial.println("IP address: ");
-      Serial.println(WiFi.localIP());
+      Serial.println(WiFi.localIP());*/
       connectToMqtt();
       break;
     case SYSTEM_EVENT_STA_DISCONNECTED:
-      Serial.println("WiFi lost connection");
+      //Serial.println("WiFi lost connection");
       break;
   }
 }
@@ -99,12 +99,12 @@ void ExecuteReadings() {
     // Temperature in Celsius degrees 
     //float temperature = sensors.getTempCByIndex(0);
     double temperature = getTemperature(sensors);
-    Serial.print(temperature);
-    Serial.println(" *C");   
+   // Serial.print(temperature);
+  //  Serial.println(" *C");   
     lastTemperature = String(temperature);
 
     double batteryLevel = map(analogRead(batLevelGPio), 0.0f, 4095.0f, 0, 100);
-    Serial.print(batteryLevel);
+   // Serial.print(batteryLevel);
     batLevel = String(batteryLevel);
 
     // Publish an MQTT message on topic esp32/dht/temperature
@@ -113,29 +113,29 @@ void ExecuteReadings() {
     uint16_t packetIdPub2 = mqttClient.publish(MQTT_PUB_BAT, 1, true, String(batLevel).c_str()); 
 
     delay(2500);
-    Serial.println("Going to sleep now");
+  //  Serial.println("Going to sleep now");
     WiFi.disconnect();    
     Serial.flush(); 
     esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
     esp_deep_sleep_start();
-    Serial.println("This will never be printed");
+ //   Serial.println("This will never be printed");
 }
 
 void onMqttConnect(bool sessionPresent) {
-  Serial.println("Connected to MQTT.");
+ /* Serial.println("Connected to MQTT.");
   Serial.print("Session present: ");
-  Serial.println(sessionPresent);
+  Serial.println(sessionPresent);*/
   ExecuteReadings();
 }
 
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
-  Serial.println("Disconnected from MQTT.");
+ // Serial.println("Disconnected from MQTT.");
 }
 
 void onMqttPublish(uint16_t packetId) {
-  Serial.print("Publish acknowledged.");
+ /* Serial.print("Publish acknowledged.");
   Serial.print("  packetId: ");
-  Serial.println(packetId);
+  Serial.println(packetId);*/
 }
 
 void setup() {
