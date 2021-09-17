@@ -16,7 +16,7 @@ C[Battery Voltage] -->B
 B-->D[WIFI]
 D-->E>MQTT]
 E-->F[NodeRed]
-F-->G[(InfluxDB)]
+F-->G(InfluxDB)
 
 ```
 
