@@ -23,6 +23,8 @@ OneWire oneWire(oneWireBus);
 // Pass our oneWire reference to Dallas Temperature sensor 
 DallasTemperature sensors(&oneWire);
 String lastTemperature;
+
+const int batLevelGPio = 35;
 String batLevel;
 
 //deep sleep related:
@@ -70,19 +72,46 @@ void WiFiEvent(WiFiEvent_t event) {
   }
 }
 
+double getTemperature(DallasTemperature sensor) {
+  // call sensors.requestTemperatures() to issue a global temperature
+  // request to all devices on the bus
+  sensor.requestTemperatures(); // Send the command to get temperature readings
+
+  double t;
+  int cnt = 0;
+  do {
+    t = sensor.getTempCByIndex(0); // Why "byIndex"?  You can have more than one DS18B20 on the same bus.
+    // 0 refers to the first IC on the wire
+    delay(1);
+    Serial.print(".");
+    cnt++;
+    if(cnt > 3) {
+      return -127.0;
+    }
+  } while (t == 85.0 || t == -127.0);
+
+  return t;
+}
+
 void ExecuteReadings() {  
+    //delay(2500);
     sensors.requestTemperatures();
     // Temperature in Celsius degrees 
-    float temperature = sensors.getTempCByIndex(0);
+    //float temperature = sensors.getTempCByIndex(0);
+    double temperature = getTemperature(sensors);
     Serial.print(temperature);
-    Serial.println(" *C"); 
-  
+    Serial.println(" *C");   
     lastTemperature = String(temperature);
-    batLevel = String(17);
+
+    double batteryLevel = map(analogRead(batLevelGPio), 0.0f, 4095.0f, 0, 100);
+    Serial.print(batteryLevel);
+    batLevel = String(batteryLevel);
+
     // Publish an MQTT message on topic esp32/dht/temperature
     uint16_t packetIdPub1 = mqttClient.publish(MQTT_PUB_TEMP, 1, true, lastTemperature.c_str());
     // Publish an MQTT message on topic esp32/dht/humidity
-    uint16_t packetIdPub2 = mqttClient.publish(MQTT_PUB_BAT, 1, true, String(batLevel).c_str());
+    uint16_t packetIdPub2 = mqttClient.publish(MQTT_PUB_BAT, 1, true, String(batLevel).c_str()); 
+
     delay(2500);
     Serial.println("Going to sleep now");
     WiFi.disconnect();    
