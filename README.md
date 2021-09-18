@@ -22,6 +22,22 @@ F-->G(InfluxDB)
 
 ## Hardware:
 
+### Verwendete Komponenten:
+
+ESP 32 Dev Board
+
+Photovoltaik Zelle
+
+TP4056 Ladecontroller
+
+18650 LiOn Battery
+
+18650 Battery Halter
+
+
+
+### Fritzing Diagram:
+
 ![](./doc/FritzingDiagrampng.png)
 
 ## Software (ESP32):
